@@ -9,3 +9,5 @@ synthetic_experiments/plots/
 synthetic_experiments/trained_models/
 synthetic_experiments/df*/
 synthetic_experiments/data/
+
+utils/__pycache__
