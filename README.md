@@ -82,7 +82,7 @@ Navigate to the corresponding folder:
     ```
     cd real_world_experiments 
     ```
-1. `main.py' runs the training and the evaluation of a model on the weather dataset. For all optional arguments, such as the flow architecture, the number of layers, 
+1. `main.py` runs the training and the evaluation of a model on the weather dataset. For all optional arguments, such as the flow architecture, the number of layers, 
 and so on, please run 
     ```
     python3 main.py -h 
