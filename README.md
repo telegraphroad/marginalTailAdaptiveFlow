@@ -98,3 +98,14 @@ after training the models. Additional arguments are displayed after running
     ```
     python3 random_statistics.py -h 
     ```
+    
+
+## Citing mTAF
+> @inproceedings{laszkiewicz2022mtaf,
+  title={Marginal Tail-Adaptive Normalizing Flows},
+  author={Laszkiewicz, Mike and Lederer, Johannes and Fischer, Asja},
+  booktitle={International Conference on Machine Learning},
+  pages={TBD--TBD},
+  year={2022},
+  organization={PMLR}
+}
