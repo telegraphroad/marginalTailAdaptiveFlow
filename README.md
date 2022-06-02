@@ -24,7 +24,7 @@ tailed data. We demonstrate its application on a
 weather and climate example, in which capturing
 the tail behavior is essential. 
 
-![](overview.pdf)
+![](overview.png)
 
 *An Overview of mTAF. In a first step, we apply estimators from extreme value theory to classify the marginals as heavy- or
 light-tailed. This classification defines a flexible base distribution consisting of marginal Gaussians and marginal t-distributions with
