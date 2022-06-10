@@ -202,6 +202,7 @@ def plot_weather(data, args=""):
     else:
         patches.append(Line2D([0], [0], color='#785EF0', lw=1, label='$i$ᵗʰ profile'))
     plt.legend(handles=patches, loc='best')
+    plt.xlabel("Atmospheric level")
     plt.tight_layout()
 
     # save locally as pdf

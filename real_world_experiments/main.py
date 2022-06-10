@@ -96,11 +96,11 @@ if __name__=="__main__":
         print(f"Sampling from the model...{j*10}/{num_samps} samples generated.")
         if j==0:
             all_samps = model.flow.sample(10).detach().cpu().numpy()
-            if args.marginals == "mTAF":
+            if args.marginals in ["mTAF", "gTAF"]:
                 all_samps = all_samps[:, model.inv_perm]
         else:
             samps = model.flow.sample(10).detach().cpu().numpy()
-            if args.marginals == "mTAF":
+            if args.marginals in ["mTAF", "gTAF"]:
                 samps = samps[:, model.inv_perm]
             all_samps = np.vstack([all_samps, samps])
 
