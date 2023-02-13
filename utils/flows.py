@@ -215,9 +215,10 @@ class experiment:
                     PATH_tailest = "data/" + self.setting + "/tail_estimator" + str(j + 1) + ".txt"
             else:
                 PATH_tailest = PATH + str(j + 1) + ".txt"
-            try:
+            if self.model in ["mTAF", "mTAF(fix)"]:
+                assert Path(PATH_tailest).exists(), f"File {PATH_tailest} does not exists. Try rerunning the code with the flag --estimate_tails True"
                 tail_index = np.loadtxt(PATH_tailest)
-            except:
+            else:
                 print(f"Marginal Nr. {j+1} is set to a light-tailed marginal.")
                 tail_index = 0
 
@@ -284,7 +285,7 @@ class experiment:
                 PATH_tailest = f"data/marginals/{self.data}/tail_estimator{j+1}.txt"
             np.savetxt(PATH_marg + ".dat", df.values, fmt=["%10.5f", "%d"])
 
-            script = "python ../utils/tail_estimation.py " + PATH_marg + ".dat " + PATH_marg + "_results.pdf --noise 0 --path_estimator " + PATH_tailest
+            script = "python3 ../utils/tail_estimation.py " + PATH_marg + ".dat " + PATH_marg + "_results.pdf --noise 0 --path_estimator " + PATH_tailest
 
             os.system(script)
 
@@ -348,14 +349,13 @@ class experiment:
                         print(df)
                         self.ls_dfs.append(df)
 
-
                 with open(self.PATH_results + "_train.txt", "a") as f:
                     f.write(str(trn_loss) + " " + str(self.model_nr) + "\n")
                 with open(self.PATH_results + "_val.txt", "a") as f:
                     f.write(str(val_loss_avg) + " " + str(self.model_nr) + "\n")
 
                 wandb.log({"trn_loss": trn_loss,
-                           "val_loss": val_loss_avg})
+                          "val_loss": val_loss_avg})
 
         # load the best model:
         self.flow.load_state_dict(torch.load(self.PATH_model, map_location=device))

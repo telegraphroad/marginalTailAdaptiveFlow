@@ -51,16 +51,12 @@ class TailLU(Linear):
     def forward_no_cache(self, inputs, context=None):
         light_forward = (self.W1.weight() @ inputs[:, :self.num_light, None]).squeeze()
         heavy_forward = (torch.cat([self.W2.weight, self.W3.weight()], dim=1) @ inputs[:, :, None]).squeeze()
-        try:
-            outputs = torch.cat([light_forward, heavy_forward], dim=1) + self.bias
-        except:
-            # heavy_forward or light_forward is a 1-D tensor. This happens when there is just one heavy- or light-tailed component, respectively.
-            try:
-                # only one heavy-tailed component
-                outputs = torch.cat([light_forward, heavy_forward[:, None]], dim=1) + self.bias
-            except:
-                # only one light-tailed component
-                outputs = torch.cat([light_forward[:, None], heavy_forward], dim=1) + self.bias
+        if len(heavy_forward.shape)==1: # Only one heavy tailed marginal
+            heavy_forward = heavy_forward[:, None]
+        if len(light_forward.shape)==1: # Only one light tailed marginal
+            light_forward = light_forward[:, None]
+        outputs = torch.cat([light_forward, heavy_forward], dim=1) + self.bias
+
         logabsdet = self.logabsdet() * inputs.new_ones(outputs.shape[0])
         return outputs, logabsdet
 
@@ -78,13 +74,13 @@ class TailLU(Linear):
 
         upper_outputs = (W1_inv @ inputs[:, :self.num_light, None]).squeeze()
         lower_outputs = (torch.cat([W_prod, W3_inv], dim=1) @ inputs[:, :, None]).squeeze()
-        try:
-            outputs = torch.cat([upper_outputs, lower_outputs], dim=1)
-        except: # see forward_no_cache
-            try:
-                outputs = torch.cat([upper_outputs[:, None], lower_outputs], dim=1)
-            except:
-                outputs = torch.cat([upper_outputs, lower_outputs[:, None]], dim=1)
+
+        if len(upper_outputs.shape)==1: # Only one light tailed marginal
+            upper_outputs = upper_outputs[:, None]
+        if len(lower_outputs.shape)==1: # Only one heavy tailed marginal
+            lower_outputs = lower_outputs[:, None]
+
+        outputs = torch.cat([upper_outputs, lower_outputs], dim=1)
 
         logabsdet = -self.logabsdet()
         logabsdet = logabsdet * inputs.new_ones(outputs.shape[0])
