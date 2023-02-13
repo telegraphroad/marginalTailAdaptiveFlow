@@ -149,7 +149,7 @@ class experiment:
             self.data_train = (self.data_train - mu)/s
             self.data_test = (self.data_test - mu)/s
             self.data_val = (self.data_val - mu)/s
-
+            torch.save(data,f'target_{data.shape[1]}.pth')
 
         if self.model in ["mTAF", "gTAF", "mTAF(fix)"]:
             if self.data == "weather":

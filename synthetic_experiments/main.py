@@ -8,8 +8,10 @@ import sys
 import inspect
 import numpy as np
 import seaborn as sns
+import torch
 sns.set_context('paper', font_scale=2)
 import wandb
+import matplotlib.pyplot as plt
 # login to wandb:
 wandb.init(anonymous="allow", project="mTAF_ICML")
 
@@ -151,6 +153,27 @@ elif args.flow=="nsf":
     model.config(num_layers=args.num_layers, tail_bound=args.tail_bound, train_steps=train_steps, num_bins=3, linear_layer=args.linearity, track_results=True, lr_df=lr_df,
                  model_nr=args.model_nr, num_hidden=num_hidden, activation=activation, num_blocks=args.num_blocks)
     test_loss = model.train(grad_clip=grad_clip)
+
+###################################
+# Generate marginal density plots #
+###################################
+
+sample = model.flow.sample(20000).detach().cpu().numpy()
+torch.save(sample,f'sample_{args.flow}_{args.num_layers}layers_{args.marginals}_dim{args.dim}.pth')
+target = torch.load(f'target_{args.dim}.pth')
+fig, axes = plt.subplots(1,target.shape[1], figsize=(40, 20))
+for i,ax in enumerate(axes):
+    ax.hist(sample[:,i], label=f'{args.flow}_{args.num_layers}layers_{args.marginals}_mean:{np.mean(sample[:,i])}_std:{np.std(sample[:,i])}', bins=500,alpha=0.5)
+    ax.hist(target[:,i], label=f"target_mean:{np.mean(target[:,i])}_std:{np.std(target[:,i])}", bins=500,alpha=0.3) 
+    ax.legend()
+plt.savefig(f'densityplots_{args.flow}_{args.num_layers}layers_{args.marginals}_dim{args.dim}.png')
+
+fig, axes = plt.subplots(1,target.shape[1], figsize=(40, 20))
+for i,ax in enumerate(axes):
+    ax.hist(np.log(sample[:,i]), label=f'{args.flow}_{args.num_layers}layers_{args.marginals}_mean:{np.mean(sample[:,i])}_std:{np.std(sample[:,i])}', bins=500,alpha=0.5)
+    ax.hist(np.log(target[:,i]), label=f"target_mean:{np.mean(target[:,i])}_std:{np.std(target[:,i])}", bins=500,alpha=0.3) 
+    ax.legend()
+plt.savefig(f'densityplots_{args.flow}_{args.num_layers}layers_{args.marginals}_dim{args.dim}_logtransformed.png')
 
 ##################################
 # Generate additional statistics #
